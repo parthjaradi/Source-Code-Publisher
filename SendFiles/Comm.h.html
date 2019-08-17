@@ -1,0 +1,130 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <Title>Comm.h</Title>
+    <style>
+     .comments {
+     color: green }
+      h3 {
+        font-family: Cambria,Consolas;text-align: center;color: #f4602e;
+      }
+      h4 {
+        font-family: Cambria,Consolas;
+      }
+      body {
+        padding:0px 10px;
+        font-family: Cambria,Consolas;
+        font-size: 0.9375em;
+        font-weight: normal;
+      }
+      .commentsBtn,.classBtn,.functionBtn {
+      background-image: linear-gradient(to right, rgba(208, 212, 219,0), rgba(208, 212, 219,0.35));
+      border: none;
+      color: white;
+      padding: 15px 32px;
+      text - align: center;
+      text - decoration: none;
+      display: inline - block;
+      margin: 4px 2px;
+      cursor: pointer;
+      }
+      </style>
+  <script src="myscripts.js"></script> 
+  </head>
+
+  <body>    <h3>Source Code File : Comm.h<br/> </h3>
+    <h4> Dependencies:       <a href="Cpp11-BlockingQueue.h.html">Cpp11-BlockingQueue.h</a>
+      <a href="Message.h.html">Message.h</a>
+      <a href="Sockets.h.html">Sockets.h</a>
+    </h4><input type = "button" id = "commentsBtn" onclick = toggleComments() value = "Hide Comments"><input type = "button" id = "functionBtn" onclick = toggleFunctions() value = "Hide Functions"><input type = "button" id = "classBtn" onclick = toggleClasses() value = "Hide Classes">    <pre>
+#pragma once
+<div class = "comments">////////////////////////////////////////////////////////////////////</div><div class = "comments">/ Comm.h - message-passing communication facility                 //</div><div class = "comments">/ ver 2.0                                                         //</div><div class = "comments">/ Jim Fawcett, CSE687-OnLine Object Oriented Design, Fall 2017    //</div><div class = "comments">////////////////////////////////////////////////////////////////////</div><div class = "comments">*
+*  Package Operations:
+*  -------------------
+*  This package defines Sender and Receiver classes.
+*  - Sender uses a SocketConnecter and supports connecting to multiple
+*    sequential endpoints and posting messages.
+*  - Receiver uses a SocketListener which returns a Socket on connection.
+*  It also defines a Comm class
+*  - Comm simply composes a Sender and a Receiver, exposing methods:
+*    postMessage(Message) and getMessage()
+*
+*  Required Files:
+*  ---------------
+*  Comm.h, Comm.cpp,
+*  Sockets.h, Sockets.cpp,
+*  Message.h, Message.cpp,
+*  Utilities.h, Utilities.cpp
+*
+*  Maintenance History:
+*  --------------------
+*  ver 2.0 : 07 Oct 2017
+*  - added sendFile(...) as private member of Sender
+*  - added receiveFile() as member of ClientHandler
+*  ver 1.0 : 03 Oct 2017
+*  - first release
+*/</div>
+
+#include "../Message/Message.h"
+#include "../Cpp11-BlockingQueue/Cpp11-BlockingQueue.h"
+#include "../Sockets/Sockets.h"
+#include &lt;string&gt;
+#include &lt;thread&gt;
+
+using namespace Sockets;
+
+namespace MsgPassingCommunication
+<div class=namespace id=43>{
+  <div class = "comments">//////////////////////////////////////////////////////////////////</div>  <div class = "comments">/ Receiver class</div>
+  class Receiver
+  <div class=cclass id=48>{
+  public:
+    Receiver(EndPoint ep, const std::string& name = "Receiver");
+    template&lt;typename CallableObject&gt;
+    void start(CallableObject& co);
+    void stop();
+    Message getMessage();
+    BlockingQueue&lt;Message&gt;* queue();
+  private:
+	  BlockingQueue&lt;Message&gt; rcvQ;
+    SocketListener listener;
+    std::string rcvrName;
+  };
+</div>
+  <div class = "comments">//////////////////////////////////////////////////////////////////</div>  <div class = "comments">/ Sender class</div>
+  class Sender
+  <div class=cclass id=66>{
+  public:
+    Sender(const std::string& name = "Sender");
+    ~Sender();
+    void start();
+    void stop();
+    bool connect(EndPoint ep);
+    void postMessage(Message msg);
+  private:
+  	bool sendFile(Message msg);
+	  BlockingQueue&lt;Message&gt; sndQ;
+    SocketConnecter connecter;
+    std::thread sendThread;
+    EndPoint lastEP;
+    std::string sndrName;
+  };
+</div>
+  class Comm
+  <div class=cclass id=84>{
+  public:
+    Comm(EndPoint ep, const std::string& name = "Comm");
+    void start();
+    void stop();
+    void postMessage(Message msg);
+    Message getMessage();
+    std::string name();
+  private:
+    Sender sndr;
+    Receiver rcvr;
+    std::string commName;
+  };
+}</div>
+    </pre>
+  </body>
+</html>
